@@ -104,10 +104,3 @@ jspm_packages/
 *.backup
 *.tmp
 
-# Portfolio data with large files
-public/Portfolio_data/
-src/data/Portfolio_data/
-
-# Keep only optimized versions
-!public/Portfolio_data/optimized/
-!src/data/Portfolio_data/optimized/
