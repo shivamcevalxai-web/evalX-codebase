@@ -81,7 +81,6 @@ jspm_packages/
 
 # Large media files (over 100MB)
 *.gif
-*.mp4
 *.mov
 *.avi
 *.webm
