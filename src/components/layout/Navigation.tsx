@@ -63,7 +63,7 @@ export default function Navigation() {
     
     // Small delay to ensure menu closes before scrolling
     setTimeout(() => {
-      const element = document.querySelector(href)
+      const element = document.querySelector(href) as HTMLElement
       if (element) {
         // Get the element's position and account for fixed header
         const headerHeight = 80 // Approximate header height
