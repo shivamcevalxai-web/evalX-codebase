@@ -101,7 +101,7 @@ export default function HeroSection() {
             </motion.button>
           </motion.div>
 
-          {/* Stats */}
+          {/* Stats - Fixed alignment for mobile */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -109,22 +109,22 @@ export default function HeroSection() {
             className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto pt-6 sm:pt-8 px-4"
           >
             <div className="flex items-center justify-center space-x-3">
-              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-evalx-blue" />
-              <div className="text-left">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-evalx-blue flex-shrink-0" />
+              <div className="text-center sm:text-left">
                 <div className="text-xl sm:text-2xl font-bold text-white">4</div>
                 <div className="text-xs sm:text-sm text-gray-300">Dedicated Team</div>
               </div>
             </div>
             <div className="flex items-center justify-center space-x-3">
-              <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-evalx-purple" />
-              <div className="text-left">
+              <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-evalx-purple flex-shrink-0" />
+              <div className="text-center sm:text-left">
                 <div className="text-xl sm:text-2xl font-bold text-white">24/7</div>
                 <div className="text-xs sm:text-sm text-gray-300">Availability</div>
               </div>
             </div>
             <div className="flex items-center justify-center space-x-3">
-              <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-evalx-cyan" />
-              <div className="text-left">
+              <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-evalx-cyan flex-shrink-0" />
+              <div className="text-center sm:text-left">
                 <div className="text-xl sm:text-2xl font-bold text-white">99%</div>
                 <div className="text-xs sm:text-sm text-gray-300">Quality Rate</div>
               </div>

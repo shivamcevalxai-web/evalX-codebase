@@ -58,11 +58,23 @@ export default function Navigation() {
   }, [isOpen])
 
   const scrollToSection = (href: string) => {
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+    // Close mobile menu first
     setIsOpen(false)
+    
+    // Small delay to ensure menu closes before scrolling
+    setTimeout(() => {
+      const element = document.querySelector(href)
+      if (element) {
+        // Get the element's position and account for fixed header
+        const headerHeight = 80 // Approximate header height
+        const elementPosition = element.offsetTop - headerHeight
+        
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        })
+      }
+    }, 100)
   }
 
   return (

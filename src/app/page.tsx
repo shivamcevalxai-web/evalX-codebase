@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Navigation from '@/components/layout/Navigation'
 import HeroSection from '@/components/sections/HeroSection'
 import ResponsiveSection from '@/components/ui/ResponsiveSection'
@@ -10,12 +10,17 @@ import AboutSection from '@/components/sections/AboutSection'
 import ReadyToWorkSection from '@/components/sections/ReadyToWorkSection'
 import ContactSection from '@/components/sections/ContactSection'
 import LoadingScreen from '@/components/ui/LoadingScreen'
-import { Play, Github, ExternalLink } from 'lucide-react'
+import { Play, Github, ExternalLink, X } from 'lucide-react'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
   const [isContentReady, setIsContentReady] = useState(false)
   const [showContent, setShowContent] = useState(false)
+  const [videoModal, setVideoModal] = useState<{isOpen: boolean, src: string, title: string}>({
+    isOpen: false,
+    src: '',
+    title: ''
+  })
   const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -65,6 +70,34 @@ export default function Home() {
       return () => clearTimeout(renderTimer)
     }
   }, [isLoading])
+
+  // Video modal handlers
+  const openVideoModal = (src: string, title: string) => {
+    setVideoModal({ isOpen: true, src, title })
+    document.body.style.overflow = 'hidden'
+  }
+
+  const closeVideoModal = () => {
+    setVideoModal({ isOpen: false, src: '', title: '' })
+    document.body.style.overflow = 'unset'
+  }
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && videoModal.isOpen) {
+        closeVideoModal()
+      }
+    }
+
+    if (videoModal.isOpen) {
+      document.addEventListener('keydown', handleEscKey)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey)
+    }
+  }, [videoModal.isOpen])
 
   // Pre-render content but keep it hidden
   const mainContent = (
@@ -196,17 +229,40 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-blue/50 transition-all duration-300 overflow-hidden hover:bg-white/10 hover:shadow-2xl hover:shadow-evalx-blue/20"
+              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-blue/50 transition-all duration-300 overflow-hidden hover:bg-white/10 hover:shadow-2xl hover:shadow-evalx-blue/20 cursor-pointer"
+              onClick={() => openVideoModal('/Portfolio_data/habit_neural_network.mp4', 'Habit Neural Network Website')}
             >
               <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Portfolio_data/optimized/recording-1-placeholder.jpg"
-                  alt="AI Code Analysis System Demo"
+                <video
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = "/Portfolio_data/optimized/screenshot-2-optimized.png"
+                  poster="/Portfolio_data/optimized/recording-1-placeholder.jpg"
+                  preload="auto"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  controls={false}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.play().catch(console.error)
                   }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.pause()
+                  }}
+                  onError={(e) => {
+                    console.error('Video failed to load:', e.currentTarget.src)
+                    // Fallback to image
+                    const img = e.currentTarget.nextElementSibling as HTMLImageElement
+                    if (img) img.style.display = 'block'
+                    e.currentTarget.style.display = 'none'
+                  }}
+                >
+                  <source src="/Portfolio_data/habit_neural_network.mp4" type="video/mp4" />
+                </video>
+                <img
+                  src="/Portfolio_data/optimized/screenshot-2-optimized.png"
+                  alt="Habit Neural Network Website Demo"
+                  className="w-full h-full object-cover absolute inset-0"
+                  style={{ display: 'none' }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -257,18 +313,26 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-purple/50 transition-all duration-300 overflow-hidden hover:bg-white/10"
+              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-purple/50 transition-all duration-300 overflow-hidden hover:bg-white/10 cursor-pointer"
+              onClick={() => openVideoModal('/Portfolio_data/social_media_dashboard.mp4', 'Social Media Analytics Dashboard')}
             >
               <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Portfolio_data/optimized/recording-2-placeholder.jpg"
-                  alt="Trading Backtesting Engine Demo"
+                <video
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = "/Portfolio_data/optimized/screenshot-3-optimized.png"
-                  }}
-                />
+                  poster="/Portfolio_data/optimized/recording-2-placeholder.jpg"
+                  preload="auto"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                >
+                  <source src="/Portfolio_data/social_media_dashboard.mp4" type="video/mp4" />
+                  <img
+                    src="/Portfolio_data/optimized/screenshot-3-optimized.png"
+                    alt="Social Media Analytics Dashboard Demo"
+                    className="w-full h-full object-cover"
+                  />
+                </video>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
@@ -318,18 +382,26 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-cyan/50 transition-all duration-300 overflow-hidden hover:bg-white/10"
+              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-cyan/50 transition-all duration-300 overflow-hidden hover:bg-white/10 cursor-pointer"
+              onClick={() => openVideoModal('/Portfolio_data/button_interface.mp4', 'Test Button Micro-interaction Interface')}
             >
               <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Portfolio_data/optimized/recording-3-placeholder.jpg"
-                  alt="Autonomous Driving DRL Demo"
+                <video
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = "/Portfolio_data/optimized/screenshot-4-optimized.png"
-                  }}
-                />
+                  poster="/Portfolio_data/optimized/recording-3-placeholder.jpg"
+                  preload="auto"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                >
+                  <source src="/Portfolio_data/button_interface.mp4" type="video/mp4" />
+                  <img
+                    src="/Portfolio_data/optimized/screenshot-4-optimized.png"
+                    alt="Test Button Micro-interaction Interface Demo"
+                    className="w-full h-full object-cover"
+                  />
+                </video>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
@@ -440,18 +512,26 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-purple/50 transition-all duration-300 overflow-hidden hover:bg-white/10"
+              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-purple/50 transition-all duration-300 overflow-hidden hover:bg-white/10 cursor-pointer"
+              onClick={() => openVideoModal('/Portfolio_data/education_platform.mp4', 'Educational Learning Platform')}
             >
               <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Portfolio_data/optimized/recording-4-placeholder.jpg"
-                  alt="Model Training Pipeline"
+                <video
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = "/Portfolio_data/optimized/screenshot-1-optimized.png"
-                  }}
-                />
+                  poster="/Portfolio_data/optimized/recording-4-placeholder.jpg"
+                  preload="auto"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                >
+                  <source src="/Portfolio_data/education_platform.mp4" type="video/mp4" />
+                  <img
+                    src="/Portfolio_data/optimized/screenshot-1-optimized.png"
+                    alt="Educational Learning Platform Demo"
+                    className="w-full h-full object-cover"
+                  />
+                </video>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
@@ -501,18 +581,26 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.6 }}
-              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-cyan/50 transition-all duration-300 overflow-hidden hover:bg-white/10"
+              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-cyan/50 transition-all duration-300 overflow-hidden hover:bg-white/10 cursor-pointer"
+              onClick={() => openVideoModal('/Portfolio_data/toc.mp4', 'Physiotherapist Website')}
             >
               <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Portfolio_data/optimized/toc-placeholder.jpg"
-                  alt="AI Website Development Demo"
+                <video
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = "/Portfolio_data/optimized/screenshot-1-optimized.png"
-                  }}
-                />
+                  poster="/Portfolio_data/optimized/toc-placeholder.jpg"
+                  preload="auto"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                >
+                  <source src="/Portfolio_data/toc.mp4" type="video/mp4" />
+                  <img
+                    src="/Portfolio_data/optimized/screenshot-1-optimized.png"
+                    alt="Physiotherapist Website Demo"
+                    className="w-full h-full object-cover"
+                  />
+                </video>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
@@ -551,6 +639,93 @@ export default function Home() {
                   <div className="text-xs">
                     <div className="text-evalx-cyan font-semibold">Professional</div>
                     <div className="text-gray-400">Design</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Project 7 - Medical F&Q Chatbot */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              className="group relative bg-white/5 backdrop-blur-md rounded-2xl border border-gray-600 hover:border-evalx-blue/50 transition-all duration-300 overflow-hidden hover:bg-white/10 hover:shadow-2xl hover:shadow-evalx-blue/20 cursor-pointer"
+              onClick={() => openVideoModal('/Portfolio_data/medical_faq_chatbot.mp4', 'Medical F&Q Chatbot')}
+            >
+              <div className="relative h-48 overflow-hidden">
+                <video
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  poster="/Portfolio_data/optimized/recording-1-placeholder.jpg"
+                  preload="auto"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  onMouseEnter={(e) => e.currentTarget.play()}
+                  onMouseLeave={(e) => e.currentTarget.pause()}
+                  onError={(e) => {
+                    console.error('Video failed to load:', e.currentTarget.src)
+                    // Show fallback image
+                    const video = e.currentTarget
+                    const parent = video.parentElement
+                    if (parent) {
+                      const fallbackImg = parent.querySelector('img') as HTMLImageElement
+                      if (fallbackImg) {
+                        fallbackImg.style.display = 'block'
+                        video.style.display = 'none'
+                      }
+                    }
+                  }}
+                  onLoadStart={() => console.log('Video loading started')}
+                  onCanPlay={() => console.log('Video can play')}
+                >
+                  <source src="/Portfolio_data/medical_faq_chatbot.mp4" type="video/mp4" />
+                  <img
+                    src="/Portfolio_data/optimized/screenshot-2-optimized.png"
+                    alt="Medical F&Q Chatbot Demo"
+                    className="w-full h-full object-cover"
+                  />
+                </video>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                    <Play className="w-6 h-6 text-white ml-1" />
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-medium text-evalx-blue bg-evalx-blue/20 px-3 py-1 rounded-full">
+                    AI/ML
+                  </span>
+                  <div className="flex space-x-2">
+                    <a href="https://github.com/yourusername/medical-chatbot" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                      <Github className="w-4 h-4" />
+                    </a>
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Medical F&Q Chatbot</h3>
+                <p className="text-gray-300 text-sm mb-4">A Retrieval-Augmented Generation (RAG) based chatbot that answers medical questions using a curated dataset of medical FAQs. The system combines semantic search with AI-powered text generation to provide accurate and contextual medical information.</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">Python</span>
+                  <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">Streamlit</span>
+                  <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">FAISS</span>
+                  <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">OpenAI</span>
+                  <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">RAG</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="text-xs">
+                    <div className="text-evalx-blue font-semibold">Semantic</div>
+                    <div className="text-gray-400">Search</div>
+                  </div>
+                  <div className="text-xs">
+                    <div className="text-evalx-blue font-semibold">AI-Powered</div>
+                    <div className="text-gray-400">Responses</div>
+                  </div>
+                  <div className="text-xs">
+                    <div className="text-evalx-blue font-semibold">100+</div>
+                    <div className="text-gray-400">FAQs</div>
                   </div>
                 </div>
               </div>
@@ -708,6 +883,71 @@ export default function Home() {
 
       <ContactSection />
       </div>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {videoModal.isOpen && (
+          <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto"
+          onClick={closeVideoModal}
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="relative w-full max-w-6xl max-h-[90vh] bg-black rounded-2xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-900/50 border-b border-gray-700">
+              <h3 className="text-lg sm:text-xl font-semibold text-white truncate pr-4">{videoModal.title}</h3>
+              <button
+                onClick={closeVideoModal}
+                className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-700/50 flex-shrink-0"
+              >
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            </div>
+            
+            {/* Video Player */}
+            <div className="relative w-full bg-black" style={{ 
+              aspectRatio: '16/9', 
+              maxHeight: 'calc(90vh - 120px)',
+              minHeight: '300px'
+            }}>
+              <video
+                className="w-full h-full object-contain"
+                controls
+                autoPlay
+                muted={false}
+                loop
+                playsInline
+                style={{ 
+                  maxHeight: 'calc(90vh - 120px)',
+                  minHeight: '300px'
+                }}
+                onError={(e) => {
+                  console.error('Video failed to load in modal:', e.currentTarget.src)
+                }}
+              >
+                <source src={videoModal.src} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            
+            {/* Footer */}
+            <div className="p-3 sm:p-4 bg-gray-900/50 border-t border-gray-700">
+              <p className="text-xs sm:text-sm text-gray-400 text-center">
+                Click outside the video or press the X button to close
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+        )}
+      </AnimatePresence>
 
     </motion.main>
   )
