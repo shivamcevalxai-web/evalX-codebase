@@ -33,6 +33,23 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/Portfolio_data/(.*\\.(mp4|webm|ogg))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        },
+        {
+          "key": "Content-Type",
+          "value": "video/mp4"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
     }
   ],
   "rewrites": [
