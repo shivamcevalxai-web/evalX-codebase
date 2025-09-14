@@ -14,6 +14,29 @@ const services = [
   'Workflows Automation',
 ]
 
+const countryCodes = [
+  { label: '🇺🇸 +1', value: '+1', country: 'United States' },
+  { label: '🇮🇳 +91', value: '+91', country: 'India' },
+  { label: '🇬🇧 +44', value: '+44', country: 'United Kingdom' },
+  { label: '🇨🇦 +1', value: '+1', country: 'Canada' },
+  { label: '🇦🇺 +61', value: '+61', country: 'Australia' },
+  { label: '🇩🇪 +49', value: '+49', country: 'Germany' },
+  { label: '🇫🇷 +33', value: '+33', country: 'France' },
+  { label: '🇯🇵 +81', value: '+81', country: 'Japan' },
+  { label: '🇨🇳 +86', value: '+86', country: 'China' },
+  { label: '🇧🇷 +55', value: '+55', country: 'Brazil' },
+  { label: '🇷🇺 +7', value: '+7', country: 'Russia' },
+  { label: '🇰🇷 +82', value: '+82', country: 'South Korea' },
+  { label: '🇮🇹 +39', value: '+39', country: 'Italy' },
+  { label: '🇪🇸 +34', value: '+34', country: 'Spain' },
+  { label: '🇳🇱 +31', value: '+31', country: 'Netherlands' },
+  { label: '🇸🇬 +65', value: '+65', country: 'Singapore' },
+  { label: '🇦🇪 +971', value: '+971', country: 'UAE' },
+  { label: '🇿🇦 +27', value: '+27', country: 'South Africa' },
+  { label: '🇲🇽 +52', value: '+52', country: 'Mexico' },
+  { label: '🇦🇷 +54', value: '+54', country: 'Argentina' },
+]
+
 export default function ContactSection() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState<string | null>(null)
@@ -21,6 +44,8 @@ export default function ContactSection() {
   const [budgetAmount, setBudgetAmount] = useState('')
   const [selectedCurrency, setSelectedCurrency] = useState('USD')
   const [projectDescription, setProjectDescription] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [selectedCountryCode, setSelectedCountryCode] = useState('+1')
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({})
   const [fieldTouched, setFieldTouched] = useState<{[key: string]: boolean}>({})
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -43,8 +68,15 @@ export default function ContactSection() {
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Please enter a valid email address'
         break
       case 'phone':
-        if (value && !/^[\+]?[1-9][\d]{0,15}$/.test(value.replace(/\s/g, ''))) {
-          error = 'Please enter a valid phone number'
+        if (value && value.trim()) {
+          // Remove all non-digit characters except + for validation
+          const cleanPhone = value.replace(/[^\d]/g, '')
+          // Check if phone number is between 7-15 digits (international standard)
+          if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+            error = 'Phone number must be between 7-15 digits'
+          } else if (!/^[1-9]\d{6,14}$/.test(cleanPhone)) {
+            error = 'Please enter a valid phone number'
+          }
         }
         break
       case 'budget':
@@ -116,11 +148,12 @@ export default function ContactSection() {
     }
 
     // Prepare the data for confirmation
+    const fullPhoneNumber = phoneNumber.trim() ? `${selectedCountryCode} ${phoneNumber.trim()}` : ''
     const preparedData = {
       name: payload.name as string,
       company: payload.company as string,
       email: payload.email as string,
-      phone: payload.phone as string || '',
+      phone: fullPhoneNumber,
       services: selectedServices as string[],
       budget: payload.budget as string,
       currency: payload.currency as string,
@@ -171,6 +204,8 @@ export default function ContactSection() {
         setFieldTouched({})
         setProjectDescription('')
         setBudgetAmount('')
+        setPhoneNumber('')
+        setSelectedCountryCode('+1')
       }
     } catch (err) {
       console.error('Error submitting form:', err)
@@ -413,23 +448,43 @@ export default function ContactSection() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300">Phone</label>
-            <input 
-              name="phone" 
-              type="tel" 
-              placeholder="+1 555 000 0000" 
-              onChange={(e) => handleFieldChange('phone', e.target.value)}
-              onBlur={(e) => handleFieldBlur('phone', e.target.value)}
-              className={`mt-2 w-full rounded-lg border bg-white/10 text-white placeholder-gray-400 px-4 py-3 focus:outline-none focus:ring-2 ${
-                fieldErrors.phone && fieldTouched.phone 
-                  ? 'border-red-500 focus:ring-red-500/50' 
-                  : 'border-gray-600 focus:ring-evalx-blue'
-              }`} 
-            />
-            <AnimatePresence>
-              {fieldErrors.phone && fieldTouched.phone && (
-                <AlertMessage message={fieldErrors.phone} />
-              )}
-            </AnimatePresence>
+            <div className="mt-2 flex gap-2">
+              <DarkSelect
+                name="countryCode"
+                placeholder="+1"
+                defaultValue="+1"
+                value={selectedCountryCode}
+                onChange={(value) => setSelectedCountryCode(value)}
+                options={countryCodes}
+                className="w-24"
+              />
+              <div className="flex-1">
+                <input 
+                  name="phone" 
+                  type="tel" 
+                  value={phoneNumber}
+                  onChange={(e) => {
+                    setPhoneNumber(e.target.value)
+                    handleFieldChange('phone', e.target.value)
+                  }}
+                  onBlur={(e) => handleFieldBlur('phone', e.target.value)}
+                  placeholder="555 000 0000" 
+                  className={`w-full rounded-lg border bg-white/10 text-white placeholder-gray-400 px-4 py-3 focus:outline-none focus:ring-2 ${
+                    fieldErrors.phone && fieldTouched.phone 
+                      ? 'border-red-500 focus:ring-red-500/50' 
+                      : 'border-gray-600 focus:ring-evalx-blue'
+                  }`} 
+                />
+                <AnimatePresence>
+                  {fieldErrors.phone && fieldTouched.phone && (
+                    <AlertMessage message={fieldErrors.phone} />
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+            <p className="mt-1 text-xs text-gray-400">
+              💡 Enter your phone number without the country code (it's selected above)
+            </p>
           </div>
 
           <div className="md:col-span-2">

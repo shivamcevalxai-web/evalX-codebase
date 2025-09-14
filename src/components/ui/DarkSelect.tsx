@@ -16,17 +16,25 @@ interface DarkSelectProps {
   required?: boolean
   className?: string
   defaultValue?: string
+  value?: string
+  onChange?: (value: string) => void
 }
 
-export default function DarkSelect({ name, placeholder = 'Select', options, required, className, defaultValue }: DarkSelectProps) {
+export default function DarkSelect({ name, placeholder = 'Select', options, required, className, defaultValue, value: controlledValue, onChange }: DarkSelectProps) {
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState<number>(-1)
-  const [value, setValue] = useState<Option | null>(() => {
+  const [internalValue, setInternalValue] = useState<Option | null>(() => {
+    if (controlledValue) {
+      return options.find(opt => opt.value === controlledValue) || null
+    }
     if (defaultValue) {
       return options.find(opt => opt.value === defaultValue) || null
     }
     return null
   })
+
+  // Use controlled value if provided, otherwise use internal value
+  const value = controlledValue ? options.find(opt => opt.value === controlledValue) || null : internalValue
   const [dropdownPosition, setDropdownPosition] = useState<'top' | 'bottom'>('bottom')
   const ref = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -72,7 +80,11 @@ export default function DarkSelect({ name, placeholder = 'Select', options, requ
     if (e.key === 'Enter') {
       const opt = options[activeIndex]
       if (opt) {
-        setValue(opt)
+        if (onChange) {
+          onChange(opt.value)
+        } else {
+          setInternalValue(opt)
+        }
         setOpen(false)
       }
     }
@@ -141,7 +153,11 @@ export default function DarkSelect({ name, placeholder = 'Select', options, requ
                       key={opt.value}
                       onMouseEnter={() => setActiveIndex(idx)}
                       onClick={() => {
-                        setValue(opt)
+                        if (onChange) {
+                          onChange(opt.value)
+                        } else {
+                          setInternalValue(opt)
+                        }
                         setOpen(false)
                       }}
                       className={`px-4 py-3 cursor-pointer transition-all duration-150 first:rounded-t-xl last:rounded-b-xl ${
