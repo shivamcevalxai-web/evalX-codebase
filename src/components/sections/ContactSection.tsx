@@ -482,9 +482,6 @@ export default function ContactSection() {
                 </AnimatePresence>
               </div>
             </div>
-            <p className="mt-1 text-xs text-gray-400">
-              💡 Enter your phone number without the country code (it's selected above)
-            </p>
           </div>
 
           <div className="md:col-span-2">
