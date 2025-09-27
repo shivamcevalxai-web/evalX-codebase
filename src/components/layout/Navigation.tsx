@@ -112,7 +112,7 @@ export default function Navigation() {
               ease: 'easeInOut',
             }}
           >
-            <img src="/logo-icon.svg" alt="EvalX AI" className="w-7 h-7 sm:w-8 sm:h-8 rounded-md shadow-sm" />
+            <img src="/image-13.png" alt="EvalX AI" className="w-7 h-7 sm:w-8 sm:h-8 rounded-md shadow-sm" />
             <motion.span 
               className="text-lg sm:text-xl ubuntu-bold text-white"
               animate={{
